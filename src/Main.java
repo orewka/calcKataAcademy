@@ -89,10 +89,14 @@ public class Main {
         return true;
     }
     private void checkRom(String num,String[] rom) throws Exception {
+        String[] fail = {"IIIV","IIV","IIIX","IIX"};
         int x = 0;
         int y = 0;
         int i = 0;
         int p = 0;
+        for (String ch: fail) {
+            if (ch.equals(num)) throw new Exception("Введены не корректные римские цифры");
+        }
         for (String ch: num.split("")) {
             if (ch.equals("X")) {
                 x += 10;
@@ -102,12 +106,13 @@ public class Main {
                 for (int j = 1; j < rom.length - 1; j++) {
                     if (ch.equals(rom[j])) {
                         y += j + 1;
+                        break;
                     }
                 }
                 if (y == 0) p++;
             }
         }
-        if ((i > 3) || p > 1) throw new Exception("Введены не корректные римские цифры");
+        if (i > 3) throw new Exception("Введены не корректные римские цифры");
         if ((x + y + i) > 10) throw new Exception("Введено число больше 10");
     }
 }
