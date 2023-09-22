@@ -12,31 +12,41 @@ public class Main {
     }
     private String calc(String input) throws Exception {
         String[] operands = {"*","/","+","-"};
-        HashSet<String> operands2 = new HashSet<>(List.of(operands));
-        return checkOperands(operands2, input);
+        HashSet<String> operandsSet = new HashSet<>(List.of(operands));
+        return checkOperands(operandsSet, input);
     }
-    private String checkOperands(HashSet<String> operands2, String input) throws Exception {
+    private String checkOperands(HashSet<String> operandsSet, String input) throws Exception {
         String operand = null;
         int sumOperands = 0;
-        for (String op: input.split("")) {
-            if (operands2.contains(op)) {
+        String[] parts = input.split("");
+        for (String op: parts) {
+            if (operandsSet.contains(op)) {
                 sumOperands++;
                 operand = op;
             }
         }
+        boolean minus = false;
+        if (parts[0].equals("-")) minus = true;
         if (sumOperands < 1) {
             throw new Exception("Строка не является математической операцией");
-        } else if (sumOperands > 1) {
+        } else if (sumOperands > 1 & !minus) {
             throw new Exception("Формат не удовлетворяет заданию");
         }
-        return checkArabRom(input, operand);
+        return checkArabRom(input, operand, minus);
     }
-    private String checkArabRom(String input,String operand) throws Exception {
+    private String checkArabRom(String input,String operand,boolean minus) throws Exception {
         String[] rom = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
         HashSet<String> romSet = new HashSet<>(List.of(rom));
         String[] splitInput = input.split("\\" + operand);
-        String num1 = splitInput[0].toUpperCase();
-        String num2 = splitInput[1].toUpperCase();
+        String num1 = null;
+        String num2 = null;
+        if (minus && splitInput.length == 3) {
+            num1 = "-" + splitInput[1].toUpperCase();
+            num2 = splitInput[2].toUpperCase();
+        } else {
+            num1 = splitInput[0].toUpperCase();
+            num2 = splitInput[1].toUpperCase();
+        }
         String result;
         boolean numRom1 = false;
         boolean numRom2 = false;
@@ -48,7 +58,6 @@ public class Main {
         if ((numRom1 ^ numRom2) & (checkArab(num1) | checkArab(num2))) {
             throw new Exception("Использнуются разные системы счистления");
         }
-
         checkRom(num1,rom);
         checkRom(num2,rom);
         result = String.valueOf(arithmetic(parseInt(num1), parseInt(num2), operand));
