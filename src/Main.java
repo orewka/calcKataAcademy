@@ -89,6 +89,7 @@ public class Main {
         return true;
     }
     private void checkRom(String num,String[] rom) throws Exception {
+        if (checkArab(num)) return;
         String[] fail = {"IIIV","IIV","IIIX","IIX"};
         int x = 0;
         int y = 0;
@@ -112,7 +113,7 @@ public class Main {
                 if (y == 0) p++;
             }
         }
-        if (i > 3) throw new Exception("Введены не корректные римские цифры");
+        if ((i > 3) || p > 0) throw new Exception("Введены не корректные римские цифры");
         if ((x + y + i) > 10) throw new Exception("Введено число больше 10");
     }
 }
