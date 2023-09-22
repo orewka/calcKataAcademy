@@ -7,8 +7,12 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Main main = new Main();
         Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine().replace(" ", "");
-        System.out.println(main.calc(input));
+        String input = null;
+        while (true) {
+            input = scanner.nextLine().replace(" ", "");
+            if (input.equals("return")) break;
+            System.out.println(main.calc(input));
+        }
     }
     private String calc(String input) throws Exception {
         String[] operands = {"*","/","+","-"};
@@ -25,12 +29,13 @@ public class Main {
                 operand = op;
             }
         }
-        boolean minus = false;
-        if (parts[0].equals("-")) minus = true;
+        boolean minus = parts[0].equals("-");
         if (sumOperands < 1) {
             throw new Exception("Строка не является математической операцией");
         } else if (sumOperands > 1 & !minus) {
             throw new Exception("Формат не удовлетворяет заданию");
+        } else if (sumOperands == 3) {
+            return checkOperands(operandsSet, input.replace("-", ""));
         }
         return checkArabRom(input, operand, minus);
     }
