@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Main main = new Main();
         Scanner scanner = new Scanner(System.in);
-        String input = null;
+        String input;
         while (true) {
             input = scanner.nextLine().replace(" ", "");
             if (input.equals("return")) break;
@@ -29,46 +29,29 @@ public class Main {
                 operand = op;
             }
         }
-        boolean minus = parts[0].equals("-");
         if (sumOperands < 1) {
             throw new Exception("Строка не является математической операцией");
-        } else if (sumOperands > 1 & !minus) {
+        } else if (sumOperands > 1) {
             throw new Exception("Формат не удовлетворяет заданию");
-        } else if (sumOperands == 3) {
-            return checkOperands(operandsSet, input.replace("-", ""));
         }
-        return checkArabRom(input, operand, minus);
+        return checkArabRom(input, operand);
     }
-    private String checkArabRom(String input,String operand,boolean minus) throws Exception {
+    private String checkArabRom(String input,String operand) throws Exception {
         String[] rom = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
-        HashSet<String> romSet = new HashSet<>(List.of(rom));
         String[] splitInput = input.split("\\" + operand);
-        String num1 = null;
-        String num2 = null;
-        if (minus && splitInput.length == 3) {
-            num1 = "-" + splitInput[1].toUpperCase();
-            num2 = splitInput[2].toUpperCase();
-        } else {
-            num1 = splitInput[0].toUpperCase();
-            num2 = splitInput[1].toUpperCase();
-        }
-        String result;
         boolean numRom1 = false;
         boolean numRom2 = false;
-        if (romSet.contains(num1)) numRom1 = true;
-        if (romSet.contains(num2)) numRom2 = true;
-        if (numRom1 && numRom2) {
-            return arithmeticRom(num1, num2, rom, operand);
-        }
+        String num1 = splitInput[0].toUpperCase();
+        String num2 = splitInput[1].toUpperCase();
+        if (checkRom(num1, rom)) numRom1 = true;
+        if (checkRom(num2, rom)) numRom2 = true;
+        if (numRom1 && numRom2) return arithmeticRom(num1, num2, rom, operand);
         if ((numRom1 ^ numRom2) & (checkArab(num1) | checkArab(num2))) {
             throw new Exception("Использнуются разные системы счистления");
         }
-        checkRom(num1,rom);
-        checkRom(num2,rom);
-        result = String.valueOf(arithmetic(parseInt(num1), parseInt(num2), operand));
-        return result;
+        return String.valueOf(arithmeticArab(parseInt(num1), parseInt(num2), operand));
     }
-    private int arithmetic(int num1, int num2, String operand) throws Exception {
+    private int arithmeticArab(int num1, int num2, String operand) throws Exception {
         if (num1 > 10 || num2 > 10) throw new Exception("Введено число больше 10");
         return switch (operand) {
             case "*" -> num1 * num2;
@@ -79,19 +62,36 @@ public class Main {
         };
     }
     private String arithmeticRom(String num1, String num2, String[]rom, String operand) throws Exception {
-        StringBuilder stringBuilder = new StringBuilder();
         int numInt1 = 0;
         int numInt2 = 0;
         for (int i = 0; i < rom.length; i++) {
             if (rom[i].equals(num1)) numInt1 = i + 1;
             if (rom[i].equals(num2)) numInt2 = i + 1;
         }
-        int result = arithmetic(numInt1,numInt2, operand);
-        if (result < 1) throw new Exception("В римской системе нет отрицательных чисел");
-        int first = result / 10;
-        int last = result % 10;
-        stringBuilder.append("X".repeat(first));
-        if (last > 0) stringBuilder.append(rom[last-1]);
+        int result = arithmeticArab(numInt1,numInt2, operand);
+        if (result < 0) throw new Exception("В римской системе нет отрицательных чисел");
+         else if (result < 1) throw new Exception("В римской системе нет нуля");
+        return arabToRom(result, rom);
+    }
+    private String arabToRom(int result, String[] rom) {
+        int[] cxclxlxvi = {0,0,0,0,0,0};
+        cxclxlxvi[0] = result / 100;
+        int temp = result % 100;
+        cxclxlxvi[1] = temp / 90;
+        temp = temp % 90;
+        cxclxlxvi[2] = temp / 50;
+        temp = temp % 50;
+        cxclxlxvi[3] = temp / 40;
+        temp = temp % 40;
+        cxclxlxvi[4] = temp / 10;
+        cxclxlxvi[5] = temp % 10;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("C".repeat(cxclxlxvi[0]))
+                     .append("XC".repeat(cxclxlxvi[1]))
+                     .append("L".repeat(cxclxlxvi[2]))
+                     .append("XL".repeat(cxclxlxvi[3]))
+                     .append("X".repeat(cxclxlxvi[4]));
+        if (cxclxlxvi[5] > 0) stringBuilder.append(rom[cxclxlxvi[5] - 1]);
         return stringBuilder.toString();
     }
     private boolean checkArab(String num) {
@@ -102,34 +102,10 @@ public class Main {
         }
         return true;
     }
-    private void checkRom(String num,String[] rom) throws Exception {
-        if (checkArab(num)) return;
-        String[] fail = {"IIIV","IIV","IIIX","IIX"};
-        int x = 0;
-        int y = 0;
-        int i = 0;
-        int v = 0;
-        int p = 0;
-        for (String ch: fail) {
-            if (ch.equals(num)) throw new Exception("Введены не корректные римские цифры");
-        }
-        for (String ch: num.split("")) {
-            switch (ch) {
-                case "X" -> x += 10;
-                case "I" -> i++;
-                case "V" -> v += 5;
-                default -> {
-                    for (int j = 1; j < rom.length - 1; j++) {
-                        if (ch.equals(rom[j])) {
-                            y += j + 1;
-                            break;
-                        }
-                    }
-                    if (y == 0) p++;
-                }
-            }
-        }
-        if (i > 3 || v > 5 || p > 0) throw new Exception("Введены не корректные римские цифры");
-        if (x + y + i + v > 10) throw new Exception("Введено число больше 10");
+    private boolean checkRom(String num, String[] rom) throws Exception {
+        if (checkArab(num)) return false;
+        HashSet<String> romSet = new HashSet<>(List.of(rom));
+        if (romSet.contains(num)) return true;
+        else throw new Exception("Введена не корректная римская цифра");
     }
 }
