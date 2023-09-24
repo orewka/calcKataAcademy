@@ -68,9 +68,9 @@ public class Main {
             if (rom[i].equals(num1)) numInt1 = i + 1;
             if (rom[i].equals(num2)) numInt2 = i + 1;
         }
-        int result = arithmeticArab(numInt1,numInt2, operand);
+        int result = arithmeticArab(numInt1, numInt2, operand);
         if (result < 0) throw new Exception("В римской системе нет отрицательных чисел");
-         else if (result < 1) throw new Exception("В римской системе нет нуля");
+        else if (result < 1) throw new Exception("В римской системе нет нуля");
         return arabToRom(result, rom);
     }
     private String arabToRom(int result, String[] rom) {
@@ -85,6 +85,9 @@ public class Main {
         temp = temp % 40;
         cxclxlxvi[4] = temp / 10;
         cxclxlxvi[5] = temp % 10;
+        return buildRom(cxclxlxvi, rom);
+    }
+    private String buildRom(int[] cxclxlxvi,String[] rom) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("C".repeat(cxclxlxvi[0]))
                      .append("XC".repeat(cxclxlxvi[1]))
