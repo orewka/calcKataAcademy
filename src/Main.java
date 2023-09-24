@@ -76,15 +76,11 @@ public class Main {
     private String arabToRom(int result, String[] rom) {
         int[] cxclxlxvi = {0,0,0,0,0,0};
         cxclxlxvi[0] = result / 100;
-        int temp = result % 100;
-        cxclxlxvi[1] = temp / 90;
-        temp = temp % 90;
-        cxclxlxvi[2] = temp / 50;
-        temp = temp % 50;
-        cxclxlxvi[3] = temp / 40;
-        temp = temp % 40;
-        cxclxlxvi[4] = temp / 10;
-        cxclxlxvi[5] = temp % 10;
+        cxclxlxvi[1] = (result %= 100) / 90;
+        cxclxlxvi[2] = (result %= 90) / 50;
+        cxclxlxvi[3] = (result %= 50) / 40;
+        cxclxlxvi[4] = (result %= 40) / 10;
+        cxclxlxvi[5] = result % 10;
         return buildRom(cxclxlxvi, rom);
     }
     private String buildRom(int[] cxclxlxvi,String[] rom) {
