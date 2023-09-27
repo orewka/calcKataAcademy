@@ -1,24 +1,26 @@
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-
 import static java.lang.Integer.parseInt;
+
 public class Main {
+
     public static void main(String[] args) throws Exception {
-        Main main = new Main();
         Scanner scanner = new Scanner(System.in);
         String input;
         while (true) {
             input = scanner.nextLine().replace(" ", "");
             if (input.equals("return")) break;
-            System.out.println(main.calc(input));
+            System.out.println(calc(input));
         }
     }
-    private String calc(String input) throws Exception {
+
+    public static String calc(String input) throws Exception {
         String[] operands = {"*","/","+","-"};
         HashSet<String> operandsSet = new HashSet<>(List.of(operands));
-        return checkOperands(operandsSet, input);
+        return new Main().checkOperands(operandsSet, input);
     }
+
     private String checkOperands(HashSet<String> operandsSet, String input) throws Exception {
         String operand = null;
         int sumOperands = 0;
@@ -36,6 +38,7 @@ public class Main {
         }
         return checkArabRom(input, operand);
     }
+
     private String checkArabRom(String input,String operand) throws Exception {
         String[] rom = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
         String[] splitInput = input.split("\\" + operand);
@@ -51,8 +54,9 @@ public class Main {
         }
         return String.valueOf(arithmeticArab(parseInt(num1), parseInt(num2), operand));
     }
+
     private int arithmeticArab(int num1, int num2, String operand) throws Exception {
-        if (num1 > 10 || num2 > 10) throw new Exception("Введено число больше 10");
+        if (num1 > 10 || num2 > 10 || num1 < 1 || num2 < 1) throw new Exception("Числа должны быть в диапазоне от 1 до 10");
         return switch (operand) {
             case "*" -> num1 * num2;
             case "/" -> num1 / num2;
@@ -61,6 +65,7 @@ public class Main {
             default -> 0;
         };
     }
+
     private String arithmeticRom(String num1, String num2, String[]rom, String operand) throws Exception {
         int numInt1 = 0;
         int numInt2 = 0;
@@ -73,6 +78,7 @@ public class Main {
         else if (result < 1) throw new Exception("В римской системе нет нуля");
         return arabToRom(result, rom);
     }
+
     private String arabToRom(int result, String[] rom) {
         int[] cxclxlxvi = {0,0,0,0,0,0};
         cxclxlxvi[0] = result / 100;
@@ -83,6 +89,7 @@ public class Main {
         cxclxlxvi[5] = result % 10;
         return buildRom(cxclxlxvi, rom);
     }
+
     private String buildRom(int[] cxclxlxvi,String[] rom) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("C".repeat(cxclxlxvi[0]))
@@ -93,6 +100,7 @@ public class Main {
         if (cxclxlxvi[5] > 0) stringBuilder.append(rom[cxclxlxvi[5] - 1]);
         return stringBuilder.toString();
     }
+
     private boolean checkArab(String num) {
         try {
             parseInt(num);
@@ -101,6 +109,7 @@ public class Main {
         }
         return true;
     }
+
     private boolean checkRom(String num, String[] rom) throws Exception {
         if (checkArab(num)) return false;
         HashSet<String> romSet = new HashSet<>(List.of(rom));
